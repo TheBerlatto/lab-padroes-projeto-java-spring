@@ -47,6 +47,26 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public void inserir(Cliente cliente) {
+        salvarClienteComCep(cliente);
+    }
+
+    
+    @Override
+    public void atualizar(Long id, Cliente cliente) {
+        // Buscar Cliente por ID, caso exista:
+		Optional<Cliente> clienteBd = clienteRepository.findById(id);
+		if (clienteBd.isPresent()) {
+            salvarClienteComCep(cliente);
+        }
+    }
+
+    @Override
+    public void deletar(Long id) {
+        // Deletar Cliente por ID.
+        clienteRepository.deleteById(id);
+    }
+
+    private void salvarClienteComCep(Cliente cliente) {
         // Verificar se o Endereco do Cliente já existe (pelo CEP)
         String cep = cliente.getEndereco().getCep();
         Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
@@ -58,18 +78,6 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.setEndereco(endereco);
         // Inserir Cliente, vinculando o Endereco (novo ou existente).
         clienteRepository.save(cliente);
-    }
-
-    @Override
-    public void atualizar(Long id, Cliente cliente) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'atualizar'");
-    }
-
-    @Override
-    public void deletar(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletar'");
     }
     
 }
